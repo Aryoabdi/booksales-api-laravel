@@ -15,13 +15,15 @@
       <tr>
         <th>ID</th>
         <th>Nama Author</th>
+        <th>Negara</th>
       </tr>
     </thead>
     <tbody>
       @foreach ($authors as $author)
         <tr>
-          <td>{{ $author['id'] }}</td>
-          <td>{{ $author['name'] }}</td>
+          <td>{{ $author->id }}</td>
+          <td>{{ $author->name }}</td>
+          <td>{{ $author->country }}</td>
         </tr>
       @endforeach
     </tbody>
