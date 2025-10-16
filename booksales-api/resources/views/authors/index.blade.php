@@ -15,7 +15,8 @@
       <tr>
         <th>ID</th>
         <th>Nama Author</th>
-        <th>Negara</th>
+        <th>Photo</th>
+        <th>Bio</th>
       </tr>
     </thead>
     <tbody>
@@ -23,7 +24,8 @@
         <tr>
           <td>{{ $author->id }}</td>
           <td>{{ $author->name }}</td>
-          <td>{{ $author->country }}</td>
+          <td>{{ $author->photo }}</td>
+          <td>{{ $author->bio }}</td>
         </tr>
       @endforeach
     </tbody>
