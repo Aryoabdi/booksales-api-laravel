@@ -30,6 +30,7 @@ class GenreController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string',
+            'description' => 'required|string',
         ]);
 
         if ($validator->fails()) {
@@ -41,6 +42,7 @@ class GenreController extends Controller
 
         $genre = Genre::create([
             'name' => $request->name,
+            'description' => $request->description,
         ]);
 
         return response()->json([
