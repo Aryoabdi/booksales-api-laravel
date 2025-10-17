@@ -3,14 +3,50 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Validator;
 use App\Models\Genre;
 
 class GenreController extends Controller
 {
     public function index()
     {
-        $genres = Genre::getAll();
-        return view('genres.index', compact('genres'));
+        $genres = Genre::all();
+
+        if ($genres->isEmpty()) {
+            return response()->json([
+                "success" => true,
+                "message" => "Resource data not found!"
+            ], 200);
+        }
+
+        return response()->json([
+            "success" => true,
+            "message" => "Get All Genres",
+            "data" => $genres
+        ], 200);
+    }
+
+    public function store(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()
+            ], 422);
+        }
+
+        $genre = Genre::create([
+            'name' => $request->name,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Genre added successfully!',
+            'data' => $genre
+        ], 201);
     }
 }
