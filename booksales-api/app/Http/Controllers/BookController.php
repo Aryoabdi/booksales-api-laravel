@@ -48,7 +48,7 @@ class BookController extends Controller
         $image = $request->file('cover_photo');
         $image->store('books', 'public');
 
-        $book = Book::create([
+        $books = Book::create([
             'title' => $request->title,
             'description' => $request->description,
             'price' => $request->price,
@@ -61,14 +61,14 @@ class BookController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Resource added successfully!',
-            'data' => $book
+            'data' => $books
         ], 201);
     }
 
     public function show(string $id) {
-        $book = Book::find($id);
+        $books = Book::find($id);
 
-        if (!$book) {
+        if (!$books) {
             return response()->json([
                 'success' => false,
                 'message' => 'Resource not found'
@@ -78,14 +78,14 @@ class BookController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Get detail resource',
-            'data' => $book
+            'data' => $books
         ], 200);
     }
 
     public function update(string $id, Request $request) {
-        $book = Book::find($id);
+        $books = Book::find($id);
 
-        if (!$book) {
+        if (!$books) {
             return response()->json([
                 'success' => false,
                 'message' => 'Resource not found'
@@ -122,37 +122,37 @@ class BookController extends Controller
             $image = $request->file('cover_photo');
             $image->store('books', 'public');
 
-            if ($book->cover_photo) {
-                Storage::disk('public')->delete('books/' . $book->cover_photo);
+            if ($books->cover_photo) {
+                Storage::disk('public')->delete('books/' . $books->cover_photo);
             }
 
             $data['cover_photo'] = $image->hashName();
         }
 
-        $book->update($data);
+        $books->update($data);
 
         return response()->json([
             'success' => true,
             'message' => 'Resource updated successfully',
-            'data' => $book
+            'data' => $books
         ]);
     }
 
     public function destroy(string $id) {
-        $book = Book::find($id);
+        $books = Book::find($id);
 
-        if (!$book) {
+        if (!$books) {
             return response()->json([
                 'success' => false,
                 'message' => 'Resource not found'
             ], 404);
         }
 
-        if ($book->cover_photo) {
-            Storage::disk('public')->delete('books/' . $book->cover_photo);
+        if ($books->cover_photo) {
+            Storage::disk('public')->delete('books/' . $books->cover_photo);
         }
 
-        $book->delete();
+        $books->delete();
 
         return response()->json([
             'success' => true,
