@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { getAuthors } from "../../../_services/authors";
+import { deleteAuthor, getAuthors } from "../../../_services/authors";
 import { Link } from "react-router-dom";
-import API from "../../../_api";
+import { API } from "../../../_api";
 
 export default function AuthorIndex() {
   const [authors, setAuthors] = useState([]);
@@ -19,6 +19,20 @@ export default function AuthorIndex() {
   if (token) {
     API.defaults.headers.common["Authorization"] = `Bearer ${token}`;
   }
+
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm("Are you sure want to delete this author?");
+
+    if (confirmDelete) {
+      try {
+        await deleteAuthor(id);
+        setAuthors(authors.filter((author) => author.id !== id));
+      } catch (error) {
+        console.error("Failed to delete author:", error);
+        alert("Error deleting author");
+      }
+    }
+  };
 
   return (
     <section className="bg-white dark:bg-gray-900 min-h-screen p-6">
@@ -43,6 +57,7 @@ export default function AuthorIndex() {
                 <th className="px-6 py-3">Photo</th>
                 <th className="px-6 py-3">Name</th>
                 <th className="px-6 py-3">Bio</th>
+                <th className="px-6 py-3 text-center">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -68,12 +83,28 @@ export default function AuthorIndex() {
                       {author.name}
                     </td>
                     <td className="px-6 py-4">{author.bio}</td>
+                    <td className="px-6 py-4 text-center">
+                      <div className="inline-flex items-center space-x-2">
+                        <Link
+                          to={`/admin/authors/edit/${author.id}`}
+                          className="text-white bg-indigo-500 hover:bg-indigo-600 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-3 py-1.5 text-center"
+                        >
+                          Edit
+                        </Link>
+                        <button
+                          onClick={() => handleDelete(author.id)}
+                          className="text-white bg-gray-600 hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-3 py-1.5"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 ))
               ) : (
                 <tr>
                   <td
-                    colSpan="4"
+                    colSpan="5"
                     className="text-center py-6 text-gray-500 dark:text-gray-400"
                   >
                     No authors found.

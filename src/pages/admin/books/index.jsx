@@ -1,23 +1,27 @@
 import { useEffect, useState } from "react";
-import { getBooks } from "../../../_services/books";
+import { deleteBook, getBooks } from "../../../_services/books";
 import { getGenres } from "../../../_services/genres";
 import { Link } from "react-router-dom";
+import { getAuthors } from "../../../_services/authors";
 
 export default function AdminBooks() {
   const [books, setBooks] = useState([]);
   const [genres, setGenres] = useState([]);
+  const [authors, setAuthors] = useState([]);
 
   const [openDropdownId, setOpenDropdownId] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
-      const [booksData, genresData] = await Promise.all ([
+      const [booksData, genresData, authorsData] = await Promise.all ([
         getBooks(),
         getGenres(),
+        getAuthors(),
       ])
 
       setBooks(booksData)
       setGenres(genresData)
+      setAuthors(authorsData)
     }
 
     fetchData()
@@ -28,9 +32,23 @@ export default function AdminBooks() {
     return genre ? genre.name : "Unknown Genre";
   };
 
+  const getAuthorName = (id) => {
+    const author = authors.find((author) => author.id === id);
+    return author ? author.name : "Unknown Author";
+  };  
+
   const toggleDropdown = (id) => {
     setOpenDropdownId(openDropdownId === id ? null : id)
   } 
+
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm("Are you sure want to delete this book?");
+
+    if (confirmDelete) {
+      await deleteBook(id);
+      setBooks(books.filter((book) => book.id !== id));
+    }
+  }
 
   return (
     <>
@@ -130,7 +148,7 @@ export default function AdminBooks() {
                       <td className="px-4 py-3">{ book.stock }</td>
                       <td className="px-4 py-3">{ book.cover_photo }</td>
                       <td className="px-4 py-3">{ getGenreName(book.genre_id) }</td>
-                      <td className="px-4 py-3">{ book.author_id }</td>
+                      <td className="px-4 py-3">{ getAuthorName(book.author_id) }</td>
                       <td className="px-4 py-3 flex items-center justify-end relative">
                         <button
                           id={`dropdown-button-${book.id}`}
@@ -166,7 +184,7 @@ export default function AdminBooks() {
                             </ul>
                             <div className="py-1">
                               <button 
-                              onClick={""}
+                              onClick={() => handleDelete(book.id)}
                               className="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">
                                 Delete  
                               </button>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { getGenres } from "../../../_services/genres";
+import { getGenres, deleteGenre } from "../../../_services/genres";
 import { Link } from "react-router-dom";
-import API from "../../../_api";
+import { API } from "../../../_api";
 
 export default function GenreIndex() {
   const [genres, setGenres] = useState([]);
@@ -19,6 +19,20 @@ export default function GenreIndex() {
   if (token) {
     API.defaults.headers.common["Authorization"] = `Bearer ${token}`;
   }
+
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm("Are you sure want to delete this genre?");
+    if (confirmDelete) {
+      try {
+        await deleteGenre(id);
+        setGenres(genres.filter((genre) => genre.id !== id));
+        alert("Genre deleted successfully");
+      } catch (error) {
+        console.error(error);
+        alert("Failed to delete genre");
+      }
+    }
+  };
 
   return (
     <section className="bg-white dark:bg-gray-900 min-h-screen p-6">
@@ -42,6 +56,7 @@ export default function GenreIndex() {
                 <th className="px-6 py-3">No</th>
                 <th className="px-6 py-3">Genre Name</th>
                 <th className="px-6 py-3">Description</th>
+                <th className="px-6 py-3 text-center">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -56,12 +71,26 @@ export default function GenreIndex() {
                       {genre.name}
                     </td>
                     <td className="px-6 py-4">{genre.description}</td>
+                    <td className="px-6 py-4 flex justify-center space-x-2">
+                      <Link
+                        to={`/admin/genres/edit/${genre.id}`}
+                        className="text-white bg-indigo-500 hover:bg-indigo-600 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-3 py-1.5 text-center"
+                      >
+                        Edit
+                      </Link>
+                      <button
+                        onClick={() => handleDelete(genre.id)}
+                        className="text-white bg-gray-600 hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-3 py-1.5"
+                      >
+                        Delete
+                      </button>
+                    </td>
                   </tr>
                 ))
               ) : (
                 <tr>
                   <td
-                    colSpan="3"
+                    colSpan="4"
                     className="text-center py-6 text-gray-500 dark:text-gray-400"
                   >
                     No genres found.
