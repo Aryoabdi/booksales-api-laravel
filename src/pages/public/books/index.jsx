@@ -32,7 +32,7 @@ export default function Books() {
                     <Link to={`/books/show/${book.id}`}>
                       <img
                         className="mx-auto h-full"
-                        src={`${bookImageSTORAGE}/${book.cover_photo}`}
+                        src={`${bookImageSTORAGE}/books/${book.cover_photo}`}
                         alt=""
                       />
                     </Link>

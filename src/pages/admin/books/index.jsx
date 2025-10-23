@@ -3,6 +3,7 @@ import { deleteBook, getBooks } from "../../../_services/books";
 import { getGenres } from "../../../_services/genres";
 import { Link } from "react-router-dom";
 import { getAuthors } from "../../../_services/authors";
+import { bookImageSTORAGE } from "../../../_api";
 
 export default function AdminBooks() {
   const [books, setBooks] = useState([]);
@@ -49,6 +50,8 @@ export default function AdminBooks() {
       setBooks(books.filter((book) => book.id !== id));
     }
   }
+
+  console.log("Storage URL:", bookImageSTORAGE);
 
   return (
     <>
@@ -146,52 +149,35 @@ export default function AdminBooks() {
                       </th>
                       <td className="px-4 py-3">{ book.price }</td>
                       <td className="px-4 py-3">{ book.stock }</td>
-                      <td className="px-4 py-3">{ book.cover_photo }</td>
-                      <td className="px-4 py-3">{ getGenreName(book.genre_id) }</td>
-                      <td className="px-4 py-3">{ getAuthorName(book.author_id) }</td>
-                      <td className="px-4 py-3 flex items-center justify-end relative">
-                        <button
-                          id={`dropdown-button-${book.id}`}
-                          onClick={() => toggleDropdown(book.id)}
-                          className="inline-flex items-center p-0.5 text-sm font-medium text-center text-gray-500 hover:text-gray-800 rounded-lg focus:outline-none dark:text-gray-400 dark:hover:text-gray-100"
-                          type="button"
-                        >
-                          <svg
-                            className="w-5 h-5"
-                            aria-hidden="true"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
-                          </svg>
-                        </button>
-                        {openDropdownId === book.id && (
-                          <div
-                            id="dropdown"
-                            className="absolute right-0 mt-2 z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600"
-                            style={{ top: "100%", right: "0" }}
-                          >
-                            <ul
-                              className="py-1 text-sm text-gray-700 dark:text-gray-200"
-                              aria-labelledby={`dropdown-button-${book.id}`}
-                            >
-                              <li>
-                                <Link to={`/admin/books/edit/${book.id}`} className="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-                                Edit
-                                </Link>
-                              </li>
-                            </ul>
-                            <div className="py-1">
-                              <button 
-                              onClick={() => handleDelete(book.id)}
-                              className="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">
-                                Delete  
-                              </button>
-                            </div>
-                          </div>
+                      <td className="px-4 py-3">
+                        {book.cover_photo ? (
+                          <img
+                            src={`${bookImageSTORAGE}/books/${book.cover_photo}`}
+                            alt={book.title}
+                            className="w-16 h-24 object-cover rounded border"
+                          />
+                        ) : (
+                          <span className="text-gray-400 italic">No cover</span>
                         )}
                       </td>
+                      <td className="px-4 py-3">{ getGenreName(book.genre_id) }</td>
+                      <td className="px-4 py-3">{ getAuthorName(book.author_id) }</td>
+                      <td className="px-6 py-4 text-center">
+                      <div className="inline-flex items-center space-x-2">
+                        <Link
+                          to={`/admin/books/edit/${book.id}`}
+                          className="text-white bg-indigo-500 hover:bg-indigo-600 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-3 py-1.5 text-center"
+                        >
+                          Edit
+                        </Link>
+                        <button
+                          onClick={() => handleDelete(book.id)}
+                          className="text-white bg-gray-600 hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-3 py-1.5"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
                     </tr>
 
                     )) : (

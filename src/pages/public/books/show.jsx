@@ -27,7 +27,7 @@ export default function ShowBook() {
             <div className="shrink-0 max-w-md lg:max-w-lg mx-auto">
               <img
                 className="mx-auto h-full"
-                src={`${bookImageSTORAGE}/${book.cover_photo}`}
+                src={`${bookImageSTORAGE}/books/${book.cover_photo}`}
                 alt=""
               />
             </div>
