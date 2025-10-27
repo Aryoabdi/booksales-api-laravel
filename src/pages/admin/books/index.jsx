@@ -10,8 +10,6 @@ export default function AdminBooks() {
   const [genres, setGenres] = useState([]);
   const [authors, setAuthors] = useState([]);
 
-  const [openDropdownId, setOpenDropdownId] = useState(null);
-
   useEffect(() => {
     const fetchData = async () => {
       const [booksData, genresData, authorsData] = await Promise.all ([
@@ -37,10 +35,6 @@ export default function AdminBooks() {
     const author = authors.find((author) => author.id === id);
     return author ? author.name : "Unknown Author";
   };  
-
-  const toggleDropdown = (id) => {
-    setOpenDropdownId(openDropdownId === id ? null : id)
-  } 
 
   const handleDelete = async (id) => {
     const confirmDelete = window.confirm("Are you sure want to delete this book?");

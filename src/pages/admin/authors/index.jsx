@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { deleteAuthor, getAuthors } from "../../../_services/authors";
 import { Link } from "react-router-dom";
-import { API } from "../../../_api";
+import { API, authorImageSTORAGE } from "../../../_api";
 
 export default function AuthorIndex() {
   const [authors, setAuthors] = useState([]);
@@ -71,7 +71,7 @@ export default function AuthorIndex() {
                     <td className="px-6 py-4">
                       {author.photo ? (
                         <img
-                          src={author.photo}
+                          src={`${authorImageSTORAGE}/authors/${author.photo}`}
                           alt={author.name}
                           className="w-12 h-12 object-cover rounded-full border"
                         />

@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useDecodeToken } from "../../_services/auth";
+import { EyeIcon, EyeOffIcon } from "lucide-react"; 
 
 export default function Login() {
   const navigate = useNavigate();
@@ -8,7 +10,12 @@ export default function Login() {
     email: "",
     password: "",
   });
-  const [error, setError] = useState("");
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const token = localStorage.getItem("accessToken");
+  const decodeData = useDecodeToken(token);
 
   const handleChange = (e) => {
     setFormData({
@@ -19,7 +26,20 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    setLoading(true);
+    setError(null);
+
+    // try {
+    //   const response = await login(formData)
+
+    //   localStorage.setItem("accessToken", response.token) 
+    //   localStorage.setItem("userInfo", JSON.stringify(response.user)) 
+    //   navigate(response.user.role === "admin" ? "/admin" : "/")
+    // } catch (error) {
+    //   setError(error?.response?.data?.message || error.message || "Login gagal.")
+    // } finally {
+    //   setLoading(false);
+    // }
 
     try {
       const response = await axios.post("http://127.0.0.1:8000/api/login", {
@@ -27,15 +47,26 @@ export default function Login() {
       });
 
       const token = response.data.token;
-      localStorage.setItem("token", token);
-      
+      const user = response.data.user;
+
+      localStorage.setItem("accessToken", token);
+      localStorage.setItem("userInfo", JSON.stringify(user));
+
       alert("Login berhasil!");
-      navigate("/admin/books"); 
+      navigate("/admin/authors");
     } catch (error) {
       console.error("Login gagal:", error);
       alert("Login gagal!");
+    } finally {
+      setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (token && decodeData?.exp * 1000 > Date.now()) {
+      navigate("/admin")
+    }
+  }, [token, decodeData, navigate])
 
   return (
     <>
@@ -69,7 +100,7 @@ export default function Login() {
                     value={formData.email}
                     onChange={handleChange}
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                    placeholder="name@company.com"
+                    placeholder="name@example.com"
                     required
                   />
                 </div>
@@ -80,33 +111,48 @@ export default function Login() {
                   >
                     Password
                   </label>
-                  <input
-                    type="password"
-                    name="password"
-                    id="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    placeholder="••••••••"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                    required
-                  />
+
+                  <div className="relative">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      name="password"
+                      id="password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      placeholder="••••••••"
+                      required
+                      className={`bg-gray-50 border ${
+                        error ? "border-red-500" : "border-gray-300"
+                      } text-gray-900 text-sm rounded-lg focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2.5 pr-10 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white`}
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-700 dark:text-gray-300"
+                    >
+                      {showPassword ? <EyeOffIcon size={18} /> : <EyeIcon size={18} />}
+                    </button>
+                  </div>
+
+                  {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
                 </div>
 
                 <button
                   type="submit"
                   className="w-full text-white bg-indigo-600 hover:bg-indigo-700 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800"
                 >
-                  Sign in
+                  {loading ? "Signing in..." : "Sign in"}
                 </button>
 
                 <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                   Don’t have an account yet?{" "}
-                  <a
-                    href="/register"
+                  <Link
+                    to={`/register`}
                     className="font-medium text-indigo-600 hover:underline dark:text-indigo-500"
                   >
                     Sign up
-                  </a>
+                  </Link>
                 </p>
               </form>
             </div>

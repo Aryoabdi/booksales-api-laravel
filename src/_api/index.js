@@ -7,9 +7,14 @@ export const API = axios.create({
   baseURL: `${url}/api`,
 });
 
-export const token = localStorage.getItem("token");
-if (token) {
-  API.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-}
+API.interceptors.request.use((config) => {
+  const token = localStorage.getItem("accessToken");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 
 export const bookImageSTORAGE = `${url}/storage`;
+export const authorImageSTORAGE = `${url}/storage`;
