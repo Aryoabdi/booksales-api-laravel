@@ -3,6 +3,8 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { useDecodeToken } from "../../_services/auth";
 import { EyeIcon, EyeOffIcon } from "lucide-react"; 
+import { AuthContext } from "../../context/AuthContext";
+import { useContext } from "react";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -16,6 +18,7 @@ export default function Login() {
 
   const token = localStorage.getItem("accessToken");
   const decodeData = useDecodeToken(token);
+  const { login } = useContext(AuthContext);
 
   const handleChange = (e) => {
     setFormData({
@@ -29,18 +32,6 @@ export default function Login() {
     setLoading(true);
     setError(null);
 
-    // try {
-    //   const response = await login(formData)
-
-    //   localStorage.setItem("accessToken", response.token) 
-    //   localStorage.setItem("userInfo", JSON.stringify(response.user)) 
-    //   navigate(response.user.role === "admin" ? "/admin" : "/")
-    // } catch (error) {
-    //   setError(error?.response?.data?.message || error.message || "Login gagal.")
-    // } finally {
-    //   setLoading(false);
-    // }
-
     try {
       const response = await axios.post("http://127.0.0.1:8000/api/login", {
         ...formData,
@@ -49,11 +40,11 @@ export default function Login() {
       const token = response.data.token;
       const user = response.data.user;
 
-      localStorage.setItem("accessToken", token);
-      localStorage.setItem("userInfo", JSON.stringify(user));
+      login(token, user);
 
       alert("Login berhasil!");
-      navigate("/admin/authors");
+
+      navigate(user.role === "admin" ? "/admin" : "/");
     } catch (error) {
       console.error("Login gagal:", error);
       alert("Login gagal!");

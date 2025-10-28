@@ -16,53 +16,69 @@ import AdminAuthors from "./pages/admin/authors";
 import AuthorCreate from "./pages/admin/authors/create";
 import AuthorEdit from "./pages/admin/authors/edit";
 import ShowBook from "./pages/public/books/show";
+import ProtectedRoute from "./components/ProtectedRoute";
+import History from "./pages/public/books/history";
 
 function App() {
   return (
-    <>
-      <BrowserRouter>
-        <Routes>
-          {/* Public */}
-          <Route element={<PublicLayout />}>
-            <Route index element={<Home />} />
-            <Route path="books">
-              <Route index element={<Books />} />
-              <Route path="show/:id" element={<ShowBook />} />
-            </Route>
+    <BrowserRouter>
+      <Routes>
+        {/* Public */}
+        <Route element={<PublicLayout />}>
+          <Route index element={<Home />} />
+          <Route path="books">
+            <Route index element={<Books />} />
+            <Route path="show/:id" element={<ShowBook />} />
+          </Route>
+        </Route>
+
+        <Route 
+            path="history" 
+            element={
+              <ProtectedRoute role="customer">
+                <History />
+              </ProtectedRoute>
+            } 
+          />
+
+        {/* Auth */}
+        <Route path="login" element={<Login />} />
+        <Route path="register" element={<Register />} />
+
+        {/*  Admin  */}
+        <Route
+          path="admin"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Dashboard />} />
+
+          {/* Books */}
+          <Route path="books">
+            <Route index element={<AdminBooks />} />
+            <Route path="create" element={<BookCreate />} />
+            <Route path="edit/:id" element={<BookEdit />} />
           </Route>
 
-          {/* Auth */}
-          <Route path="login" element={<Login />} />
-          <Route path="register" element={<Register />} />
-
-          {/* Admin */}
-          <Route path="admin" element={<AdminLayout />}>
-            <Route index element={<Dashboard />} />
-
-            {/* Books */}
-            <Route path="books">
-              <Route index element={<AdminBooks />} />
-              <Route path="create" element={<BookCreate />} />
-              <Route path="edit/:id" element={<BookEdit />} />
-            </Route>
-
-            {/* Genres */}
-            <Route path="genres">
-              <Route index element={<AdminGenres />} />
-              <Route path="create" element={<GenreCreate />} />
-              <Route path="edit/:id" element={<GenreEdit />} />
-            </Route>
-
-            {/* Authors */}
-            <Route path="authors">
-              <Route index element={<AdminAuthors />} />
-              <Route path="create" element={<AuthorCreate />} />
-              <Route path="edit/:id" element={<AuthorEdit />} />
-            </Route>
+          {/* Genres */}
+          <Route path="genres">
+            <Route index element={<AdminGenres />} />
+            <Route path="create" element={<GenreCreate />} />
+            <Route path="edit/:id" element={<GenreEdit />} />
           </Route>
-        </Routes>
-      </BrowserRouter>
-    </>
+
+          {/* Authors */}
+          <Route path="authors">
+            <Route index element={<AdminAuthors />} />
+            <Route path="create" element={<AuthorCreate />} />
+            <Route path="edit/:id" element={<AuthorEdit />} />
+          </Route>
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 
